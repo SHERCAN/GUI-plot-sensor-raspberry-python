@@ -1,7 +1,7 @@
 from tkinter import Tk, Label, Button, Entry, Frame, RAISED
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from readSensor import ReadSensor
-
+from time import sleep
 
 class Window:
     def __init__(self):
@@ -12,7 +12,9 @@ class Window:
         self.breedPet = ''
         self.agePet = ''
         self.pause = False
+        self.control = False
         self.Window1()
+        self.read = None
 
     def Window1(self):
         widthTk = 50
@@ -40,7 +42,7 @@ class Window:
                         width=widthTk-30, bg='blue', activebackground='red', fg='white', activeforeground='white', command=lambda: self.clear_window(1))
         ch_enc.grid(row=1, column=3, sticky='w')
         ch_dec = Button(master=self.frame, text='CANCELAR',
-                        width=widthTk-30, bg='blue', activebackground='red', fg='white', activeforeground='white', command=self.root.quit)
+                        width=widthTk-30, bg='blue', activebackground='red', fg='white', activeforeground='white', command=self.quit)
         ch_dec.grid(row=2, column=3, sticky='w')
         self.root.mainloop()
 
@@ -53,7 +55,7 @@ class Window:
         self.frame.grid(row=0, column=0)
         canvas = FigureCanvasTkAgg(self.read.fig, master=self.frame)
         canvas.get_tk_widget().grid(column=3, row=1, columnspan=2, rowspan=4)
-        self.read.animation(10)
+        self.read.animation(1)
         f_title = Label(master=self.frame,
                         text='EKG CANINO', font=('Arial', 20))
         f_title.grid(row=0, column=3, columnspan=3)
@@ -67,6 +69,15 @@ class Window:
                           activebackground='red', fg='white', activeforeground='white', command=lambda: self.clear_window(2))
         f_finish = f_finish.grid(row=3, column=1, columnspan=1, sticky="w")
         self.root.mainloop()
+    def quit(self):
+        try:
+            self.read.finish=True
+            sleep(1)
+            self.read.hilo.join()
+            del self.read.hilo
+        except:
+            pass
+        self.root.destroy()
 
     def clear_window(self, wd):
         if wd == 1:
